@@ -20,8 +20,8 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag microblog:latest
+      run: docker build . --file Dockerfile --tag matcodewarrior/microblog:v1.0.0
     #- name: Run Docker
     #  run: docker run --name microblog -dp 8000:5000 microblog
     - name: Docker Push
-      run: docker push matcodewarrior/microblog:v1
+      run: docker push matcodewarrior/microblog:v1.0.0
