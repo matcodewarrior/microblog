@@ -1,0 +1,44 @@
+FROM python:slim
+
+RUN useradd microblog
+
+WORKDIR /home/microblog
+
+COPY requirements.txt requirements.txt
+
+#RUN python -m venv venv
+#RUN venv/bin/pip install -r requirements.txt
+#RUN pip install -r requirements.txt
+#RUN venv/bin/pip install gunicorn
+
+ENV VIRTUAL_ENV=/home/microblog/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN pip install -r requirements.txt
+RUN pip install gunicorn pymysql cryptography
+
+COPY app app
+COPY migrations migrations
+COPY microblog.py boot.sh ./
+RUN chmod +x boot.sh
+
+ENV FLASK_APP microblog.py
+
+RUN chown -R microblog:microblog ./
+USER microblog
+
+EXPOSE 5000
+
+#ENTRYPOINT [ "./boot.sh" ]
+
+#RUN source venv/bin/activate
+#RUN venv/Scripts/activate
+RUN flask db upgrade
+#CMD [ "flask translate compile" ]
+#ENTRYPOINT [ "venv/bin/python" ]
+#CMD [ "microblog.py" ]
+
+#CMD ["python", "microblog.py"]
+CMD exec gunicorn -b :5000 --access-logfile - --error-logfile - microblog:app
+
+
